@@ -4,88 +4,540 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>מערכת דיווח קרנות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#1a1a2e;--ink2:#16213e;--gold:#c9a84c;--gold-light:#e8c97e;--cream:#f5f0e8;--cream2:#ede8dc;--red:#c0392b;--green:#27ae60;--shadow:0 4px 24px rgba(26,26,46,0.12);--radius:12px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Heebo',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:14px}
-header{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);color:var(--cream);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:62px;box-shadow:0 2px 20px rgba(0,0,0,0.3);position:sticky;top:0;z-index:100}
-header h1{font-family:'Frank Ruhl Libre',serif;font-size:1.3rem;color:var(--gold-light)}
-header .sub{font-size:0.72rem;color:rgba(245,240,232,0.6);margin-top:2px}
-nav{display:flex;gap:6px;background:white;padding:10px 24px;border-bottom:2px solid var(--cream2);position:sticky;top:62px;z-index:99;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow-x:auto}
-nav button{padding:7px 16px;border:2px solid transparent;border-radius:8px;background:transparent;color:var(--ink);font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap}
-nav button.active{background:var(--ink);color:var(--gold-light);border-color:var(--ink)}
-nav button:not(.active):hover{border-color:var(--gold);color:var(--gold)}
-main{max-width:1100px;margin:0 auto;padding:24px}
-.section{display:none}.section.active{display:block}
-.card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:20px}
-.card-title{font-family:'Frank Ruhl Libre',serif;font-size:1.1rem;color:var(--ink2);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--cream2);display:flex;align-items:center;gap:8px}
-.icon{width:28px;height:28px;background:var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--gold-light);font-size:0.85rem;flex-shrink:0}
-.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.fg.full{grid-column:1/-1}
-.fgrp{display:flex;flex-direction:column;gap:5px}
-.fgrp label{font-size:0.78rem;font-weight:600;color:var(--ink)}
-.fgrp input,.fgrp select,.fgrp textarea{padding:9px 12px;border:2px solid var(--cream2);border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.88rem;color:var(--ink);background:var(--cream);outline:none;transition:border-color 0.2s,background 0.2s}
-.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{border-color:var(--gold);background:white}
-.fgrp textarea{resize:vertical;min-height:70px}
-.btn{padding:9px 20px;border:none;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
-.btn-p{background:var(--ink);color:var(--gold-light)}.btn-p:hover{background:var(--ink2);transform:translateY(-1px)}
-.btn-s{background:var(--cream2);color:var(--ink)}.btn-s:hover{background:#d5cec3}
-.btn-d{background:var(--red);color:white;padding:5px 10px;font-size:0.78rem}.btn-d:hover{background:#a93226}
-.btn-sm{padding:5px 10px;font-size:0.78rem}
-.btn-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
-.alert{padding:12px 16px;border-radius:10px;margin-bottom:14px;font-size:0.85rem;display:flex;align-items:flex-start;gap:8px}
-.alert-w{background:#fef9e7;border:2px solid #f39c12;color:#7d6608}
-.alert-d{background:#fdf2f0;border:2px solid var(--red);color:#922b21}
-.alert-ok{background:#eafaf1;border:2px solid var(--green);color:#1e8449}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:20px}
-.stat-card{background:white;border-radius:12px;padding:18px;box-shadow:var(--shadow);text-align:center;border-top:4px solid var(--gold)}
-.stat-card .val{font-family:'Frank Ruhl Libre',serif;font-size:1.8rem;font-weight:700;color:var(--ink)}
-.stat-card .lbl{font-size:0.75rem;color:#7f8c8d;margin-top:4px}
-.filter-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:flex-end}
-.filter-row .fgrp{min-width:140px}
-.tag-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.tag{display:inline-flex;align-items:center;gap:5px;background:var(--ink);color:var(--cream);padding:4px 10px;border-radius:20px;font-size:0.78rem}
-.tag button{background:none;border:none;color:var(--gold-light);cursor:pointer;font-size:0.95rem;line-height:1;padding:0}
-.tag-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.tag-row input,.tag-row select{padding:8px 12px;border:2px solid var(--cream2);border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.85rem;outline:none;flex:1;min-width:120px;background:var(--cream)}
-.tw{overflow-x:auto}
-table{width:100%;border-collapse:separate;border-spacing:0;font-size:0.82rem}
-table th{background:var(--ink);color:var(--gold-light);padding:10px 12px;text-align:right;font-weight:600;font-size:0.75rem;white-space:nowrap}
-table th:first-child{border-radius:0 8px 0 0}table th:last-child{border-radius:8px 0 0 0}
-table td{padding:10px 12px;border-bottom:1px solid var(--cream2);white-space:nowrap;vertical-align:middle}
-table tr:hover td{background:var(--cream)}table tr:last-child td{border-bottom:none}
-.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:0.73rem;font-weight:600}
-.b-ok{background:#eafaf1;color:#1e8449}.b-w{background:#fef9e7;color:#7d6608}.b-d{background:#fdf2f0;color:#922b21}.b-e{background:#f4f6f7;color:#717d7e}
-.stabs{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}
-.stab{padding:7px 14px;border:2px solid var(--cream2);border-radius:8px;background:white;color:var(--ink);font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s}
-.stab.active{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700}
-.stab:not(.active):hover{border-color:var(--gold);color:var(--gold)}
-.acc-item{background:white;border-radius:10px;box-shadow:var(--shadow);margin-bottom:8px;overflow:hidden}
-.acc-hdr{display:flex;align-items:center;gap:10px;padding:13px 18px;background:var(--ink);color:var(--gold-light);font-family:'Frank Ruhl Libre',serif;font-size:0.95rem;cursor:pointer;user-select:none;transition:background 0.2s}
-.acc-hdr:hover{background:#222244}
-.acc-hdr .gt{margin-right:auto;background:var(--gold);color:var(--ink);padding:2px 10px;border-radius:20px;font-size:0.78rem;font-weight:700;font-family:'Heebo',sans-serif}
-.acc-hdr .arr{font-size:0.7rem;opacity:0.7;transition:transform 0.25s;flex-shrink:0}
-.acc-item.open .arr{transform:rotate(180deg)}
-.acc-body{display:none;border-top:2px solid var(--cream2)}
-.acc-item.open .acc-body{display:block}
-.acc-item table th{border-radius:0}
-.empty-state{text-align:center;padding:50px 20px;color:#95a5a6}
-.empty-state .em{font-size:2.5rem;margin-bottom:10px}
-.modal-overlay{position:fixed;inset:0;background:rgba(26,26,46,0.6);backdrop-filter:blur(4px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.open{display:flex}
-.modal{background:white;border-radius:16px;padding:28px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:mIn 0.2s ease}
-@keyframes mIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}
-.modal-title{font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;margin-bottom:20px;color:var(--ink)}
-#reminder-banner{position:fixed;bottom:20px;left:20px;max-width:380px;background:white;border:3px solid var(--red);border-radius:14px;padding:16px 18px;box-shadow:0 8px 32px rgba(192,57,43,0.25);z-index:200;transform:translateX(-120%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}
-#reminder-banner.show{transform:translateX(0)}
-#reminder-banner h3{color:var(--red);font-size:0.95rem;margin-bottom:6px}
-#reminder-banner p{font-size:0.8rem;color:var(--ink);line-height:1.5}
-#reminder-banner .cb{position:absolute;top:8px;left:12px;background:none;border:none;font-size:1.1rem;cursor:pointer;color:#7f8c8d}
-.save-ind{position:fixed;bottom:20px;right:20px;background:var(--green);color:white;padding:8px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;z-index:200;transform:translateY(60px);transition:transform 0.3s;font-family:'Heebo',sans-serif}
-.save-ind.show{transform:translateY(0)}
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--cream)}::-webkit-scrollbar-thumb{background:#c0b9ae;border-radius:3px}
-@media(max-width:600px){main{padding:14px}nav{padding:8px 14px}header{padding:0 14px}.fg{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}}
+  :root {
+    --ink: #1a1a2e;
+    --ink2: #16213e;
+    --gold: #c9a84c;
+    --gold-light: #e8c97e;
+    --cream: #f5f0e8;
+    --cream2: #ede8dc;
+    --red: #c0392b;
+    --green: #27ae60;
+    --blue: #2980b9;
+    --shadow: 0 4px 24px rgba(26,26,46,0.12);
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 100%);
+    color: var(--cream);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.5rem;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+  }
+  header .subtitle { font-size: 0.8rem; color: rgba(245,240,232,0.6); margin-top: 2px; }
+
+  /* NAV TABS */
+  nav {
+    display: flex;
+    gap: 8px;
+    background: white;
+    padding: 12px 32px;
+    border-bottom: 2px solid var(--cream2);
+    position: sticky;
+    top: 70px;
+    z-index: 99;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  nav button {
+    padding: 8px 20px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink);
+    font-family: 'Heebo', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  nav button.active {
+    background: var(--ink);
+    color: var(--gold-light);
+    border-color: var(--ink);
+  }
+  nav button:not(.active):hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* MAIN */
+  main { max-width: 1200px; margin: 0 auto; padding: 32px; }
+
+  /* SECTION */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+  .card-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.2rem;
+    color: var(--ink2);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--cream2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .icon {
+    width: 32px;
+    height: 32px;
+    background: var(--ink);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-light);
+    font-size: 1rem;
+  }
+
+  /* FORM GRID */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.3px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px 14px;
+    border: 2px solid var(--cream2);
+    border-radius: 8px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    background: var(--cream);
+    transition: border-color 0.2s, background 0.2s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--gold);
+    background: white;
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--gold-light);
+  }
+  .btn-primary:hover { background: var(--ink2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,26,46,0.3); }
+  .btn-secondary {
+    background: var(--cream2);
+    color: var(--ink);
+  }
+  .btn-secondary:hover { background: #d5cec3; }
+  .btn-danger {
+    background: var(--red);
+    color: white;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  .btn-danger:hover { background: #a93226; }
+  .btn-success {
+    background: var(--green);
+    color: white;
+  }
+  .btn-success:hover { background: #229954; }
+  .btn-sm {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* ALERT */
+  .alert {
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .alert-warning { background: #fef9e7; border: 2px solid #f39c12; color: #7d6608; }
+  .alert-success { background: #eafaf1; border: 2px solid var(--green); color: #1e8449; }
+  .alert-danger  { background: #fdf2f0; border: 2px solid var(--red);   color: #922b21; }
+  .alert-icon { font-size: 1.2rem; margin-top: 1px; flex-shrink: 0; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.88rem;
+  }
+  table th {
+    background: var(--ink);
+    color: var(--gold-light);
+    padding: 12px 14px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  table th:first-child { border-radius: 0 8px 0 0; }
+  table th:last-child  { border-radius: 8px 0 0 0; }
+  table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--cream2);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  table tr:hover td { background: var(--cream); }
+  table tr:last-child td { border-bottom: none; }
+
+  /* STATUS BADGE */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .badge-ok      { background: #eafaf1; color: #1e8449; }
+  .badge-warning { background: #fef9e7; color: #7d6608; }
+  .badge-danger  { background: #fdf2f0; color: #922b21; }
+  .badge-empty   { background: #f4f6f7; color: #717d7e; }
+
+  /* SUMMARY STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    border-top: 4px solid var(--gold);
+  }
+  .stat-card .val {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .stat-card .lbl { font-size: 0.8rem; color: #7f8c8d; margin-top: 4px; }
+
+  /* FILTER ROW */
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: flex-end;
+  }
+  .filter-row .form-group { min-width: 160px; margin-bottom: 0; }
+
+  /* INLINE TAG INPUT */
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+  }
+  .tag button {
+    background: none;
+    border: none;
+    color: var(--gold-light);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+  }
+  .tag-input-row { display: flex; gap: 8px; align-items: center; }
+
+  /* REMINDER BANNER */
+  #reminder-banner {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    max-width: 420px;
+    background: white;
+    border: 3px solid var(--red);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 8px 32px rgba(192,57,43,0.25);
+    z-index: 200;
+    transform: translateX(-120%);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #reminder-banner.show { transform: translateX(0); }
+  #reminder-banner h3 { color: var(--red); font-size: 1rem; margin-bottom: 8px; }
+  #reminder-banner p  { font-size: 0.85rem; color: var(--ink); line-height: 1.5; }
+  #reminder-banner .close-btn {
+    position: absolute;
+    top: 10px;
+    left: 14px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #7f8c8d;
+  }
+
+  /* MONTHLY SUMMARY */
+  .month-section { margin-bottom: 32px; }
+  .month-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .month-label {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .month-total {
+    background: var(--gold);
+    color: var(--ink);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+
+  /* SUMMARY SUB-TABS */
+  .summary-subtabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .stab {
+    padding: 8px 18px;
+    border: 2px solid var(--cream2);
+    border-radius: 8px;
+    background: white;
+    color: var(--ink);
+    font-family: 'Heebo', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .stab.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .stab:not(.active):hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ACCORDION */
+  .acc-item {
+    background: white;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .acc-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--ink);
+    color: var(--gold-light);
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .acc-header:hover { background: #222244; }
+  .acc-header .gtotal {
+    margin-right: auto;
+    background: var(--gold);
+    color: var(--ink);
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: 'Heebo', sans-serif;
+  }
+  .acc-header .acc-arrow {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .acc-item.open .acc-arrow { transform: rotate(180deg); }
+  .acc-body {
+    display: none;
+    border-top: 2px solid var(--cream2);
+  }
+  .acc-item.open .acc-body { display: block; }
+  .acc-item table th { border-radius: 0; }
+
+  /* GROUP HEADER (kept for backward compat) */
+  .group-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--ink);
+    border-radius: 10px 10px 0 0;
+    color: var(--gold-light);
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1rem;
+  }
+  .group-header .gtotal {
+    margin-right: auto;
+    background: var(--gold);
+    color: var(--ink);
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: 'Heebo', sans-serif;
+  }
+  .group-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .group-card table th { border-radius: 0; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #95a5a6;
+  }
+  .empty-state .emoji { font-size: 3rem; margin-bottom: 12px; }
+  .empty-state p { font-size: 0.95rem; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,46,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: modalIn 0.25s ease;
+  }
+  @keyframes modalIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .modal-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.3rem;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: #c0b9ae; border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    main { padding: 16px; }
+    nav  { padding: 10px 16px; overflow-x: auto; }
+    header { padding: 0 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
 </style>
 </head>
 <body>
@@ -93,107 +545,197 @@ table tr:hover td{background:var(--cream)}table tr:last-child td{border-bottom:n
 <header>
   <div>
     <h1>📋 מערכת דיווח קרנות</h1>
-    <div class="sub">ניהול קרנות פנסיה והשתלמות לעובדים</div>
+    <div class="subtitle">ניהול קרנות פנסיה והשתלמות לעובדים</div>
   </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <span id="reminder-count" style="background:var(--red);color:white;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:700;display:none"></span>
-    <span id="save-status" style="font-size:0.72rem;color:rgba(245,240,232,0.5)"></span>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span id="reminder-count" style="background:var(--red);color:white;padding:4px 12px;border-radius:20px;font-size:0.82rem;font-weight:700;display:none"></span>
   </div>
 </header>
 
 <nav>
-  <button class="active" onclick="showTab('entry',this)">➕ הזנת דיווח</button>
-  <button onclick="showTab('records',this)">📄 רשומות</button>
-  <button onclick="showTab('summary',this)">📊 סיכומים</button>
-  <button onclick="showTab('reminders',this)">🔔 תזכורות</button>
-  <button onclick="showTab('settings',this)">⚙️ הגדרות</button>
+  <button class="active" onclick="showTab('entry')">➕ הזנת דיווח</button>
+  <button onclick="showTab('records')">📄 רשומות</button>
+  <button onclick="showTab('summary')">📊 סיכומים</button>
+  <button onclick="showTab('reminders')">🔔 תזכורות</button>
+  <button onclick="showTab('settings')">⚙️ הגדרות</button>
 </nav>
 
 <main>
 
-<!-- ENTRY -->
-<div id="tab-entry" class="section active">
-  <div class="card">
-    <div class="card-title"><div class="icon">📋</div> הזנת דיווח קרן חדש</div>
-    <div class="fg">
-      <div class="fgrp"><label>חודש שכר</label><input type="month" id="f-sm"></div>
-      <div class="fgrp"><label>תאריך תשלום</label><input type="date" id="f-pd"></div>
-      <div class="fgrp"><label>שם העובד</label><select id="f-emp"><option value="">-- בחר עובד --</option></select></div>
-      <div class="fgrp"><label>סוג הקרן</label><select id="f-ft" onchange="filterFunds()"><option value="">-- בחר סוג --</option><option>פנסיה</option><option>השתלמות</option></select></div>
-      <div class="fgrp"><label>שם הקרן</label><select id="f-fn"><option value="">-- בחר קרן --</option></select></div>
-      <div class="fgrp"><label>סכום הקרן (₪)</label><input type="number" id="f-amt" placeholder="0.00" min="0" step="0.01"></div>
-      <div class="fgrp"><label>תאריך דיווח</label><input type="date" id="f-rd"></div>
-      <div class="fgrp"><label>תאריך דיווח נוסף</label><input type="date" id="f-rd2"></div>
-      <div class="fgrp"><label>סכום קרן באתר (₪)</label><input type="number" id="f-sa" placeholder="ריק = טרם עודכן" min="0" step="0.01"></div>
-      <div class="fgrp" style="grid-column:1/-1"><label>הערות</label><textarea id="f-notes" placeholder="הערות נוספות..."></textarea></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-p" onclick="saveRecord()">💾 שמור רשומה</button>
-      <button class="btn btn-s" onclick="clearForm()">🗑️ נקה טופס</button>
+  <!-- ===== ENTRY TAB ===== -->
+  <div id="tab-entry" class="section active">
+    <div class="card">
+      <div class="card-title"><div class="icon">📋</div> הזנת דיווח קרן חדש</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>חודש שכר</label>
+          <input type="month" id="f-salary-month">
+        </div>
+        <div class="form-group">
+          <label>תאריך תשלום</label>
+          <input type="date" id="f-payment-date">
+        </div>
+        <div class="form-group">
+          <label>שם העובד</label>
+          <select id="f-employee">
+            <option value="">-- בחר עובד --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>סוג הקרן</label>
+          <select id="f-fund-type" onchange="filterFunds()">
+            <option value="">-- בחר סוג --</option>
+            <option value="פנסיה">פנסיה</option>
+            <option value="השתלמות">השתלמות</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>שם הקרן</label>
+          <select id="f-fund-name">
+            <option value="">-- בחר קרן --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>סכום הקרן (₪)</label>
+          <input type="number" id="f-amount" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>תאריך דיווח</label>
+          <input type="date" id="f-report-date">
+        </div>
+        <div class="form-group">
+          <label>תאריך דיווח נוסף</label>
+          <input type="date" id="f-report-date2">
+        </div>
+        <div class="form-group">
+          <label>סכום קרן באתר (₪)</label>
+          <input type="number" id="f-site-amount" placeholder="ריק = טרם עודכן" min="0" step="0.01">
+        </div>
+        <div class="form-group full">
+          <label>הערות</label>
+          <textarea id="f-notes" placeholder="הערות נוספות..."></textarea>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveRecord()">💾 שמור רשומה</button>
+        <button class="btn btn-secondary" onclick="clearForm()">🗑️ נקה טופס</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- RECORDS -->
-<div id="tab-records" class="section">
-  <div class="card">
-    <div class="card-title"><div class="icon">📄</div> כל הרשומות</div>
-    <div class="filter-row">
-      <div class="fgrp"><label>עובד</label><select id="rf-emp" onchange="renderRecords()"><option value="">הכל</option></select></div>
-      <div class="fgrp"><label>חודש</label><input type="month" id="rf-m" onchange="renderRecords()"></div>
-      <div class="fgrp"><label>סוג קרן</label><select id="rf-t" onchange="renderRecords()"><option value="">הכל</option><option>פנסיה</option><option>השתלמות</option></select></div>
-      <div class="fgrp"><label>סטטוס</label><select id="rf-s" onchange="renderRecords()"><option value="">הכל</option><option value="missing">חסר סכום באתר</option><option value="overdue">מעל 45 יום</option><option value="ok">עודכן</option></select></div>
-      <button class="btn btn-s btn-sm" onclick="clearFilters()" style="align-self:flex-end">נקה</button>
-    </div>
-    <div class="tw" id="records-wrap"><div class="empty-state"><div class="em">📭</div><p>אין רשומות עדיין</p></div></div>
-  </div>
-</div>
-
-<!-- SUMMARY -->
-<div id="tab-summary" class="section">
-  <div class="stats-grid" id="summary-stats"></div>
-  <div class="stabs">
-    <button class="stab active" onclick="switchSV('month',this)">📅 לפי חודש</button>
-    <button class="stab" onclick="switchSV('employee',this)">👤 לפי עובד</button>
-    <button class="stab" onclick="switchSV('type',this)">🏷️ לפי סוג קרן</button>
-    <button class="stab" onclick="switchSV('fund',this)">🏦 לפי שם קרן</button>
-  </div>
-  <div id="summary-content"></div>
-</div>
-
-<!-- REMINDERS -->
-<div id="tab-reminders" class="section">
-  <div class="card">
-    <div class="card-title"><div class="icon">🔔</div> תזכורות — "סכום קרן באתר" פתוח מעל 45 יום</div>
-    <div id="reminders-content"><div class="empty-state"><div class="em">✅</div><p>אין תזכורות</p></div></div>
-  </div>
-</div>
-
-<!-- SETTINGS -->
-<div id="tab-settings" class="section">
-  <div class="card">
-    <div class="card-title"><div class="icon">👥</div> עובדים</div>
-    <div class="tag-list" id="emp-list"></div>
-    <div class="tag-row">
-      <input id="new-emp" placeholder="שם עובד חדש" onkeydown="if(event.key==='Enter')addEmployee()">
-      <button class="btn btn-p" onclick="addEmployee()">➕ הוסף</button>
+  <!-- ===== RECORDS TAB ===== -->
+  <div id="tab-records" class="section">
+    <div class="card">
+      <div class="card-title"><div class="icon">📄</div> כל הרשומות</div>
+      <div class="filter-row">
+        <div class="form-group">
+          <label>סנן לפי עובד</label>
+          <select id="r-filter-emp" onchange="renderRecords()">
+            <option value="">הכל</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>סנן לפי חודש</label>
+          <input type="month" id="r-filter-month" onchange="renderRecords()">
+        </div>
+        <div class="form-group">
+          <label>סנן לפי סוג</label>
+          <select id="r-filter-type" onchange="renderRecords()">
+            <option value="">הכל</option>
+            <option value="פנסיה">פנסיה</option>
+            <option value="השתלמות">השתלמות</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>סטטוס</label>
+          <select id="r-filter-status" onchange="renderRecords()">
+            <option value="">הכל</option>
+            <option value="missing">חסר סכום באתר</option>
+            <option value="overdue">מעל 45 יום</option>
+            <option value="ok">עודכן</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="clearFilters()" style="align-self:flex-end">נקה סינון</button>
+      </div>
+      <div class="table-wrap" id="records-table-wrap">
+        <div class="empty-state"><div class="emoji">📭</div><p>אין רשומות עדיין</p></div>
+      </div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-title"><div class="icon">🏦</div> קרנות</div>
-    <div class="tag-list" id="fund-list"></div>
-    <div class="tag-row">
-      <input id="new-fn" placeholder="שם קרן חדשה" onkeydown="if(event.key==='Enter')addFund()">
-      <select id="new-ft"><option>פנסיה</option><option>השתלמות</option></select>
-      <button class="btn btn-p" onclick="addFund()">➕ הוסף</button>
+
+  <!-- ===== SUMMARY TAB ===== -->
+  <div id="tab-summary" class="section">
+    <div class="stats-grid" id="summary-stats"></div>
+    <!-- Sub-tabs -->
+    <div class="summary-subtabs">
+      <button class="stab active" onclick="switchSummaryView('month', this)">📅 לפי חודש</button>
+      <button class="stab" onclick="switchSummaryView('employee', this)">👤 לפי עובד</button>
+      <button class="stab" onclick="switchSummaryView('type', this)">🏷️ לפי סוג קרן</button>
+      <button class="stab" onclick="switchSummaryView('fund', this)">🏦 לפי שם קרן</button>
+    </div>
+    <div id="summary-content"></div>
+  </div>
+
+  <!-- ===== REMINDERS TAB ===== -->
+  <div id="tab-reminders" class="section">
+    <div class="card">
+      <div class="card-title"><div class="icon">🔔</div> תזכורות — שדות "סכום קרן באתר" פתוחים מעל 45 יום</div>
+      <div id="reminders-content">
+        <div class="empty-state"><div class="emoji">✅</div><p>אין תזכורות כרגע</p></div>
+      </div>
     </div>
   </div>
-  <div class="card" style="border:2px solid #e74c3c">
-    <div class="card-title" style="color:var(--red)"><div class="icon" style="background:var(--red)">⚠️</div> איפוס נתונים</div>
-    <p style="font-size:0.83rem;color:#7f8c8d;margin-bottom:14px">פעולה זו תמחק את כל הרשומות, העובדים והקרנות. לא ניתן לשחזר.</p>
-    <button class="btn btn-d" onclick="resetAll()">🗑️ מחק הכל</button>
+
+  <!-- ===== SETTINGS TAB ===== -->
+  <div id="tab-settings" class="section">
+    <div class="card">
+      <div class="card-title"><div class="icon">👥</div> עובדים</div>
+      <div class="tag-list" id="employees-list"></div>
+      <div class="tag-input-row">
+        <input class="form-group input" id="new-employee" placeholder="שם עובד חדש" style="padding:9px 14px;border:2px solid var(--cream2);border-radius:8px;font-family:Heebo,sans-serif;font-size:0.9rem;outline:none;flex:1;background:var(--cream)">
+        <button class="btn btn-primary" onclick="addEmployee()">➕ הוסף</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="icon">🏦</div> קרנות</div>
+      <div class="tag-list" id="funds-list"></div>
+      <div class="tag-input-row" style="gap:8px;flex-wrap:wrap">
+        <input id="new-fund-name" placeholder="שם קרן חדשה" style="padding:9px 14px;border:2px solid var(--cream2);border-radius:8px;font-family:Heebo,sans-serif;font-size:0.9rem;outline:none;flex:1;min-width:140px;background:var(--cream)">
+        <select id="new-fund-type" style="padding:9px 14px;border:2px solid var(--cream2);border-radius:8px;font-family:Heebo,sans-serif;font-size:0.9rem;outline:none;background:var(--cream)">
+          <option value="פנסיה">פנסיה</option>
+          <option value="השתלמות">השתלמות</option>
+        </select>
+        <button class="btn btn-primary" onclick="addFund()">➕ הוסף</button>
+      </div>
+    </div>
+    <div class="card" style="border:2px solid var(--gold)">
+      <div class="card-title"><div class="icon">💾</div> גיבוי ושחזור נתונים</div>
+      <p style="font-size:0.88rem;color:#7f8c8d;margin-bottom:20px">ייצאי את הנתונים לקובץ JSON לגיבוי, ויבאי בכל מחשב או דפדפן.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="background:var(--cream);border-radius:10px;padding:18px;text-align:center">
+          <div style="font-size:2rem;margin-bottom:8px">📤</div>
+          <div style="font-weight:600;font-size:0.9rem;margin-bottom:6px">ייצוא נתונים</div>
+          <div style="font-size:0.8rem;color:#7f8c8d;margin-bottom:14px">הורדת קובץ גיבוי<br>עם כל הנתונים</div>
+          <button class="btn btn-primary" onclick="exportData()" style="width:100%">⬇️ ייצא JSON</button>
+        </div>
+        <div style="background:var(--cream);border-radius:10px;padding:18px;text-align:center">
+          <div style="font-size:2rem;margin-bottom:8px">📥</div>
+          <div style="font-weight:600;font-size:0.9rem;margin-bottom:6px">ייבוא נתונים</div>
+          <div style="font-size:0.8rem;color:#7f8c8d;margin-bottom:14px">טעינת קובץ גיבוי<br>קיים למערכת</div>
+          <label class="btn btn-primary" style="width:100%;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px">
+            ⬆️ ייבא JSON
+            <input type="file" accept=".json" id="import-file" style="display:none" onchange="importData(event)">
+          </label>
+        </div>
+      </div>
+      <div id="import-status" style="margin-top:12px"></div>
+    </div>
+    <div class="card" style="border:2px solid #e74c3c">
+      <div class="card-title" style="color:var(--red)"><div class="icon" style="background:var(--red)">⚠️</div> איפוס נתונים</div>
+      <p style="font-size:0.88rem;color:#7f8c8d;margin-bottom:16px">פעולה זו תמחק את כל הרשומות, העובדים והקרנות. לא ניתן לשחזר.</p>
+      <button class="btn btn-danger" onclick="resetAll()">🗑️ מחק הכל</button>
+    </div>
   </div>
-</div>
 
 </main>
 
@@ -201,469 +743,668 @@ table tr:hover td{background:var(--cream)}table tr:last-child td{border-bottom:n
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
     <div class="modal-title">✏️ עריכת רשומה</div>
-    <div class="fg" id="edit-form"></div>
+    <div class="form-grid" id="edit-form-content"></div>
     <div class="btn-row">
-      <button class="btn btn-p" onclick="saveEdit()">💾 שמור שינויים</button>
-      <button class="btn btn-s" onclick="closeModal()">ביטול</button>
+      <button class="btn btn-primary" onclick="saveEdit()">💾 שמור שינויים</button>
+      <button class="btn btn-secondary" onclick="closeModal()">ביטול</button>
     </div>
   </div>
 </div>
 
+<!-- REMINDER BANNER -->
 <div id="reminder-banner">
-  <button class="cb" onclick="closeBanner()">✕</button>
+  <button class="close-btn" onclick="closeBanner()">✕</button>
   <h3>🔔 תזכורת חשובה!</h3>
   <p id="banner-text"></p>
 </div>
 
-<div class="save-ind" id="save-ind">✓ נשמר</div>
-
 <script>
-let DB = { employees:[], funds:[], records:[] };
-let svView = 'month';
-let accN = 0;
-let editId = null;
-let saveTimer = null;
+// ======= DATA STORE =======
+let DB = {
+  employees: ['דוד לוי', 'ישראל ישראלי', 'שרה כהן'],
+  funds: [
+    { name: 'הפועלים גמל', type: 'השתלמות' },
+    { name: 'כלל פנסיה', type: 'פנסיה' },
+    { name: 'מגדל השתלמות', type: 'השתלמות' },
+    { name: 'מנורה מבטחים', type: 'פנסיה' },
+  ],
+  records: []
+};
 
-// ===== STORAGE =====
-async function dbLoad() {
-  try {
-    const r = await window.storage.get('pension_db');
-    if (r && r.value) {
-      DB = JSON.parse(r.value);
-      if (!DB.employees) DB.employees = [];
-      if (!DB.funds) DB.funds = [];
-      if (!DB.records) DB.records = [];
-    } else {
-      DB = { employees:[], funds:[], records:[] };
-    }
-  } catch(e) {
-    DB = { employees:[], funds:[], records:[] };
-  }
-  populateSelects();
-  setDefaults();
-  checkReminders();
+function save() { localStorage.setItem('fundDB', JSON.stringify(DB)); }
+function load() {
+  const d = localStorage.getItem('fundDB');
+  if (d) DB = JSON.parse(d);
 }
+load();
 
-async function dbSave() {
-  try {
-    await window.storage.set('pension_db', JSON.stringify(DB));
-    const ind = document.getElementById('save-ind');
-    ind.classList.add('show');
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => ind.classList.remove('show'), 2000);
-  } catch(e) {
-    console.error('Save failed', e);
-  }
-}
-
-// ===== HELPERS =====
+// ======= HELPERS =======
 function fmt(n) {
-  if (n===null||n===undefined||n==='') return '—';
-  return '₪' + Number(n).toLocaleString('he-IL',{minimumFractionDigits:2});
+  if (n === null || n === undefined || n === '') return '—';
+  return '₪' + Number(n).toLocaleString('he-IL', {minimumFractionDigits: 2});
 }
 function fmtDate(s) {
   if (!s) return '—';
-  return new Date(s).toLocaleDateString('he-IL');
+  const d = new Date(s);
+  return d.toLocaleDateString('he-IL');
 }
-function daysDiff(s) {
-  if (!s) return null;
-  return Math.floor((new Date() - new Date(s)) / 86400000);
+function daysDiff(dateStr) {
+  if (!dateStr) return null;
+  const now = new Date();
+  const d = new Date(dateStr);
+  return Math.floor((now - d) / 86400000);
 }
-function getStatus(r) {
-  if (r.siteAmount!==''&&r.siteAmount!=null&&r.siteAmount!==undefined) return 'ok';
-  const ref = r.reportDate||r.paymentDate;
+function getStatus(rec) {
+  if (rec.siteAmount !== '' && rec.siteAmount !== null && rec.siteAmount !== undefined) return 'ok';
+  const ref = rec.reportDate || rec.paymentDate;
   if (!ref) return 'missing';
-  return daysDiff(ref) > 45 ? 'overdue' : 'missing';
+  const diff = daysDiff(ref);
+  if (diff > 45) return 'overdue';
+  return 'missing';
 }
-function sBadge(r) {
-  const s = getStatus(r);
-  if (s==='ok') return '<span class="badge b-ok">✓ עודכן</span>';
-  if (s==='overdue') return `<span class="badge b-d">⚠️ ${daysDiff(r.reportDate||r.paymentDate)} יום</span>`;
-  return '<span class="badge b-e">ממתין</span>';
-}
-function heSort(a,b){ return a.localeCompare(b,'he'); }
-function sumAmt(arr){ return arr.reduce((s,r)=>s+(parseFloat(r.amount)||0),0); }
-function hasIssue(arr){ return arr.some(r=>getStatus(r)!=='ok'); }
-function odCount(arr){ return arr.filter(r=>getStatus(r)==='overdue').length; }
-function groupBy(arr,key){
-  return arr.reduce((acc,r)=>{
-    const k=r[key]||'(לא צוין)';
-    if(!acc[k])acc[k]=[];
-    acc[k].push(r);
-    return acc;
-  },{});
+function statusBadge(rec) {
+  const s = getStatus(rec);
+  if (s === 'ok') return '<span class="badge badge-ok">✓ עודכן</span>';
+  if (s === 'overdue') {
+    const diff = daysDiff(rec.reportDate || rec.paymentDate);
+    return `<span class="badge badge-danger">⚠️ ${diff} יום</span>`;
+  }
+  return '<span class="badge badge-empty">ממתין</span>';
 }
 
-// ===== TAB NAV =====
-function showTab(t, btn) {
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
-  if(btn) btn.classList.add('active');
-  if(t==='records'){populateFilters();renderRecords();}
-  if(t==='summary') renderSummary();
-  if(t==='reminders') renderReminders();
-  if(t==='settings') renderSettings();
+// ======= TAB NAV =======
+function showTab(t) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + t).classList.add('active');
+  event.target.classList.add('active');
+  if (t === 'records') { populateFilters(); renderRecords(); }
+  if (t === 'summary') renderSummary();
+  if (t === 'reminders') renderReminders();
+  if (t === 'settings') renderSettings();
 }
 
-// ===== SELECTS =====
+// ======= POPULATE SELECTS =======
 function populateSelects() {
-  const sel = document.getElementById('f-emp');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">-- בחר עובד --</option>';
-  [...DB.employees].sort(heSort).forEach(e=>{
-    const o=document.createElement('option');
-    o.value=e;o.textContent=e;
-    if(e===cur)o.selected=true;
-    sel.appendChild(o);
+  const empSel = document.getElementById('f-employee');
+  const cur = empSel.value;
+  empSel.innerHTML = '<option value="">-- בחר עובד --</option>';
+  [...DB.employees].sort((a,b) => a.localeCompare(b,'he')).forEach(e => {
+    const o = document.createElement('option');
+    o.value = e; o.textContent = e;
+    if (e === cur) o.selected = true;
+    empSel.appendChild(o);
   });
   filterFunds();
 }
 function filterFunds() {
-  const type=document.getElementById('f-ft').value;
-  const sel=document.getElementById('f-fn');
-  const cur=sel.value;
-  sel.innerHTML='<option value="">-- בחר קרן --</option>';
-  [...DB.funds].filter(f=>!type||f.type===type)
-    .sort((a,b)=>a.name.localeCompare(b.name,'he'))
-    .forEach(f=>{
-      const o=document.createElement('option');
-      o.value=f.name;o.textContent=`${f.name} (${f.type})`;
-      if(f.name===cur)o.selected=true;
+  const type = document.getElementById('f-fund-type').value;
+  const sel = document.getElementById('f-fund-name');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">-- בחר קרן --</option>';
+  [...DB.funds].filter(f => !type || f.type === type)
+    .sort((a,b) => a.name.localeCompare(b.name,'he'))
+    .forEach(f => {
+      const o = document.createElement('option');
+      o.value = f.name; o.textContent = `${f.name} (${f.type})`;
+      if (f.name === cur) o.selected = true;
       sel.appendChild(o);
     });
 }
 function populateFilters() {
-  const s=document.getElementById('rf-emp');
-  const cur=s.value;
-  s.innerHTML='<option value="">הכל</option>';
-  [...DB.employees].sort(heSort).forEach(e=>{
-    const o=document.createElement('option');
-    o.value=e;o.textContent=e;
-    if(e===cur)o.selected=true;
+  const s = document.getElementById('r-filter-emp');
+  const cur = s.value;
+  s.innerHTML = '<option value="">הכל</option>';
+  [...DB.employees].sort((a,b) => a.localeCompare(b,'he')).forEach(e => {
+    const o = document.createElement('option');
+    o.value = e; o.textContent = e;
+    if (e === cur) o.selected = true;
     s.appendChild(o);
   });
 }
-function setDefaults() {
-  document.getElementById('f-rd').value=new Date().toISOString().split('T')[0];
-  const now=new Date();
-  document.getElementById('f-sm').value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-}
 
-// ===== SAVE RECORD =====
+// ======= SAVE RECORD =======
 function saveRecord() {
-  const emp=document.getElementById('f-emp').value;
-  const month=document.getElementById('f-sm').value;
-  if(!emp||!month){alert('אנא מלאי לפחות חודש שכר ושם עובד');return;}
-  const rec={
-    id:Date.now(),
-    salaryMonth:month,
-    paymentDate:document.getElementById('f-pd').value,
-    employee:emp,
-    fundType:document.getElementById('f-ft').value,
-    fundName:document.getElementById('f-fn').value,
-    amount:document.getElementById('f-amt').value,
-    reportDate:document.getElementById('f-rd').value,
-    reportDate2:document.getElementById('f-rd2').value,
-    siteAmount:document.getElementById('f-sa').value,
-    notes:document.getElementById('f-notes').value,
-    createdAt:new Date().toISOString()
+  const emp = document.getElementById('f-employee').value;
+  const month = document.getElementById('f-salary-month').value;
+  if (!emp || !month) { alert('אנא מלא לפחות חודש שכר ושם עובד'); return; }
+  const rec = {
+    id: Date.now(),
+    salaryMonth: month,
+    paymentDate: document.getElementById('f-payment-date').value,
+    employee: emp,
+    fundType: document.getElementById('f-fund-type').value,
+    fundName: document.getElementById('f-fund-name').value,
+    amount: document.getElementById('f-amount').value,
+    reportDate: document.getElementById('f-report-date').value,
+    reportDate2: document.getElementById('f-report-date2').value,
+    siteAmount: document.getElementById('f-site-amount').value,
+    notes: document.getElementById('f-notes').value,
+    createdAt: new Date().toISOString()
   };
   DB.records.push(rec);
-  dbSave();
+  save();
   clearForm();
-  showToast('הרשומה נשמרה ✓');
+  showSuccess('הרשומה נשמרה בהצלחה! ✓');
   checkReminders();
 }
-function clearForm(){
-  ['f-sm','f-pd','f-rd','f-rd2'].forEach(id=>document.getElementById(id).value='');
-  ['f-emp','f-ft','f-fn'].forEach(id=>document.getElementById(id).value='');
-  ['f-amt','f-sa'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-notes').value='';
-  setDefaults();
+
+function clearForm() {
+  ['f-salary-month','f-payment-date','f-report-date','f-report-date2'].forEach(id => document.getElementById(id).value = '');
+  ['f-employee','f-fund-type','f-fund-name'].forEach(id => document.getElementById(id).value = '');
+  ['f-amount','f-site-amount'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-notes').value = '';
 }
 
-let toastT;
-function showToast(msg){
-  clearTimeout(toastT);
-  const el=document.createElement('div');
-  el.style.cssText='position:fixed;top:80px;right:20px;z-index:500;background:#27ae60;color:white;padding:9px 18px;border-radius:20px;font-family:Heebo,sans-serif;font-size:0.85rem;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.2);animation:mIn 0.3s ease';
-  el.textContent=msg;
-  document.body.appendChild(el);
-  toastT=setTimeout(()=>el.remove(),2500);
+let successTimer;
+function showSuccess(msg) {
+  clearTimeout(successTimer);
+  const s = document.createElement('div');
+  s.className = 'alert alert-success';
+  s.style.cssText = 'position:fixed;top:90px;right:24px;z-index:500;max-width:320px;animation:modalIn 0.3s ease';
+  s.innerHTML = `<span class="alert-icon">✅</span> ${msg}`;
+  document.body.appendChild(s);
+  successTimer = setTimeout(() => s.remove(), 3000);
 }
 
-// ===== RECORDS =====
-function renderRecords(){
-  const emp=document.getElementById('rf-emp').value;
-  const month=document.getElementById('rf-m').value;
-  const type=document.getElementById('rf-t').value;
-  const status=document.getElementById('rf-s').value;
-  let rows=DB.records.filter(r=>{
-    if(emp&&r.employee!==emp)return false;
-    if(month&&r.salaryMonth!==month)return false;
-    if(type&&r.fundType!==type)return false;
-    if(status){const s=getStatus(r);if(s!==status&&!(status==='missing'&&s==='missing'))return false;}
-    return true;
-  }).filter(r=>{
-    if(!status)return true;
-    if(status==='ok')return getStatus(r)==='ok';
-    if(status==='overdue')return getStatus(r)==='overdue';
-    if(status==='missing')return getStatus(r)==='missing';
+// ======= RENDER RECORDS =======
+function renderRecords() {
+  const emp    = document.getElementById('r-filter-emp').value;
+  const month  = document.getElementById('r-filter-month').value;
+  const type   = document.getElementById('r-filter-type').value;
+  const status = document.getElementById('r-filter-status').value;
+
+  let rows = DB.records.filter(r => {
+    if (emp   && r.employee !== emp) return false;
+    if (month && r.salaryMonth !== month) return false;
+    if (type  && r.fundType !== type) return false;
+    if (status) {
+      const s = getStatus(r);
+      if (status === 'ok'      && s !== 'ok') return false;
+      if (status === 'missing' && s !== 'missing') return false;
+      if (status === 'overdue' && s !== 'overdue') return false;
+    }
     return true;
   });
-  const wrap=document.getElementById('records-wrap');
-  if(!rows.length){wrap.innerHTML='<div class="empty-state"><div class="em">📭</div><p>אין רשומות תואמות</p></div>';return;}
-  rows.sort((a,b)=>b.salaryMonth.localeCompare(a.salaryMonth));
-  wrap.innerHTML=`<table><thead><tr><th>חודש שכר</th><th>עובד</th><th>סוג</th><th>קרן</th><th>סכום</th><th>ת. דיווח</th><th>סכום באתר</th><th>סטטוס</th><th>פעולות</th></tr></thead><tbody>
-    ${rows.map(r=>`<tr>
-      <td>${r.salaryMonth||'—'}</td>
+
+  const wrap = document.getElementById('records-table-wrap');
+  if (!rows.length) {
+    wrap.innerHTML = '<div class="empty-state"><div class="emoji">📭</div><p>אין רשומות תואמות</p></div>';
+    return;
+  }
+  rows.sort((a,b) => b.salaryMonth.localeCompare(a.salaryMonth));
+  wrap.innerHTML = `<table>
+    <thead><tr>
+      <th>חודש שכר</th><th>עובד</th><th>סוג קרן</th><th>שם קרן</th>
+      <th>סכום קרן</th><th>תאריך דיווח</th><th>סכום באתר</th><th>סטטוס</th><th>פעולות</th>
+    </tr></thead>
+    <tbody>
+    ${rows.map(r => `<tr>
+      <td>${r.salaryMonth || '—'}</td>
       <td><strong>${r.employee}</strong></td>
-      <td>${r.fundType||'—'}</td>
-      <td>${r.fundName||'—'}</td>
+      <td>${r.fundType || '—'}</td>
+      <td>${r.fundName || '—'}</td>
       <td>${fmt(r.amount)}</td>
       <td>${fmtDate(r.reportDate)}</td>
-      <td>${r.siteAmount!==''&&r.siteAmount!=null?fmt(r.siteAmount):'<span style="color:var(--red);font-weight:600">לא הוזן</span>'}</td>
-      <td>${sBadge(r)}</td>
-      <td style="display:flex;gap:4px">
-        <button class="btn btn-sm btn-s" onclick="editRecord(${r.id})">✏️</button>
-        <button class="btn btn-sm btn-d" onclick="deleteRecord(${r.id})">🗑️</button>
+      <td>${r.siteAmount !== '' && r.siteAmount !== null && r.siteAmount !== undefined ? fmt(r.siteAmount) : '<span style="color:#e74c3c;font-weight:600">לא הוזן</span>'}</td>
+      <td>${statusBadge(r)}</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-sm btn-secondary" onclick="editRecord(${r.id})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteRecord(${r.id})">🗑️</button>
       </td>
     </tr>`).join('')}
-  </tbody></table>`;
+    </tbody>
+  </table>`;
 }
-function clearFilters(){
-  ['rf-emp','rf-t','rf-s'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('rf-m').value='';
+
+function clearFilters() {
+  document.getElementById('r-filter-emp').value = '';
+  document.getElementById('r-filter-month').value = '';
+  document.getElementById('r-filter-type').value = '';
+  document.getElementById('r-filter-status').value = '';
   renderRecords();
 }
-function deleteRecord(id){
-  if(!confirm('למחוק את הרשומה?'))return;
-  DB.records=DB.records.filter(r=>r.id!==id);
-  dbSave();renderRecords();
+
+// ======= DELETE =======
+function deleteRecord(id) {
+  if (!confirm('למחוק את הרשומה?')) return;
+  DB.records = DB.records.filter(r => r.id !== id);
+  save(); renderRecords();
 }
 
-// ===== EDIT MODAL =====
-function editRecord(id){
-  const r=DB.records.find(x=>x.id===id);
-  if(!r)return;
-  editId=id;
-  const fo=DB.funds.map(f=>`<option value="${f.name}" ${f.name===r.fundName?'selected':''}>${f.name} (${f.type})</option>`).join('');
-  const eo=DB.employees.sort(heSort).map(e=>`<option value="${e}" ${e===r.employee?'selected':''}>${e}</option>`).join('');
-  document.getElementById('edit-form').innerHTML=`
-    <div class="fgrp"><label>חודש שכר</label><input type="month" id="e-sm" value="${r.salaryMonth||''}"></div>
-    <div class="fgrp"><label>תאריך תשלום</label><input type="date" id="e-pd" value="${r.paymentDate||''}"></div>
-    <div class="fgrp"><label>עובד</label><select id="e-emp"><option value="">--</option>${eo}</select></div>
-    <div class="fgrp"><label>סוג קרן</label><select id="e-ft"><option value="">--</option><option ${r.fundType==='פנסיה'?'selected':''}>פנסיה</option><option ${r.fundType==='השתלמות'?'selected':''}>השתלמות</option></select></div>
-    <div class="fgrp"><label>שם קרן</label><select id="e-fn"><option value="">--</option>${fo}</select></div>
-    <div class="fgrp"><label>סכום קרן</label><input type="number" id="e-amt" value="${r.amount||''}"></div>
-    <div class="fgrp"><label>תאריך דיווח</label><input type="date" id="e-rd" value="${r.reportDate||''}"></div>
-    <div class="fgrp"><label>תאריך דיווח נוסף</label><input type="date" id="e-rd2" value="${r.reportDate2||''}"></div>
-    <div class="fgrp"><label>סכום קרן באתר</label><input type="number" id="e-sa" value="${r.siteAmount||''}"></div>
-    <div class="fgrp" style="grid-column:1/-1"><label>הערות</label><textarea id="e-notes">${r.notes||''}</textarea></div>`;
+// ======= EDIT MODAL =======
+let editId = null;
+function editRecord(id) {
+  const r = DB.records.find(x => x.id === id);
+  if (!r) return;
+  editId = id;
+  const fundOpts = DB.funds.map(f =>
+    `<option value="${f.name}" ${f.name===r.fundName?'selected':''}>${f.name} (${f.type})</option>`).join('');
+  const empOpts = DB.employees.map(e =>
+    `<option value="${e}" ${e===r.employee?'selected':''}>${e}</option>`).join('');
+  document.getElementById('edit-form-content').innerHTML = `
+    <div class="form-group"><label>חודש שכר</label><input type="month" id="e-salary-month" value="${r.salaryMonth||''}"></div>
+    <div class="form-group"><label>תאריך תשלום</label><input type="date" id="e-payment-date" value="${r.paymentDate||''}"></div>
+    <div class="form-group"><label>עובד</label><select id="e-employee"><option value="">--</option>${empOpts}</select></div>
+    <div class="form-group"><label>סוג קרן</label><select id="e-fund-type"><option value="">--</option><option ${r.fundType==='פנסיה'?'selected':''}>פנסיה</option><option ${r.fundType==='השתלמות'?'selected':''}>השתלמות</option></select></div>
+    <div class="form-group"><label>שם קרן</label><select id="e-fund-name"><option value="">--</option>${fundOpts}</select></div>
+    <div class="form-group"><label>סכום קרן</label><input type="number" id="e-amount" value="${r.amount||''}"></div>
+    <div class="form-group"><label>תאריך דיווח</label><input type="date" id="e-report-date" value="${r.reportDate||''}"></div>
+    <div class="form-group"><label>תאריך דיווח נוסף</label><input type="date" id="e-report-date2" value="${r.reportDate2||''}"></div>
+    <div class="form-group"><label>סכום קרן באתר</label><input type="number" id="e-site-amount" value="${r.siteAmount||''}"></div>
+    <div class="form-group full"><label>הערות</label><textarea id="e-notes">${r.notes||''}</textarea></div>
+  `;
   document.getElementById('edit-modal').classList.add('open');
 }
-function closeModal(){document.getElementById('edit-modal').classList.remove('open');editId=null;}
-function saveEdit(){
-  const r=DB.records.find(x=>x.id===editId);
-  if(!r)return;
-  r.salaryMonth=document.getElementById('e-sm').value;
-  r.paymentDate=document.getElementById('e-pd').value;
-  r.employee=document.getElementById('e-emp').value;
-  r.fundType=document.getElementById('e-ft').value;
-  r.fundName=document.getElementById('e-fn').value;
-  r.amount=document.getElementById('e-amt').value;
-  r.reportDate=document.getElementById('e-rd').value;
-  r.reportDate2=document.getElementById('e-rd2').value;
-  r.siteAmount=document.getElementById('e-sa').value;
-  r.notes=document.getElementById('e-notes').value;
-  dbSave();closeModal();renderRecords();showToast('הרשומה עודכנה ✓');checkReminders();
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+  editId = null;
 }
-document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+function saveEdit() {
+  const r = DB.records.find(x => x.id === editId);
+  if (!r) return;
+  r.salaryMonth  = document.getElementById('e-salary-month').value;
+  r.paymentDate  = document.getElementById('e-payment-date').value;
+  r.employee     = document.getElementById('e-employee').value;
+  r.fundType     = document.getElementById('e-fund-type').value;
+  r.fundName     = document.getElementById('e-fund-name').value;
+  r.amount       = document.getElementById('e-amount').value;
+  r.reportDate   = document.getElementById('e-report-date').value;
+  r.reportDate2  = document.getElementById('e-report-date2').value;
+  r.siteAmount   = document.getElementById('e-site-amount').value;
+  r.notes        = document.getElementById('e-notes').value;
+  save(); closeModal(); renderRecords();
+  showSuccess('הרשומה עודכנה בהצלחה! ✓');
+  checkReminders();
+}
 
-// ===== SUMMARY =====
-function switchSV(v,btn){
-  svView=v;
-  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+// ======= SUMMARY =======
+let summaryView = 'month';
+
+function switchSummaryView(view, btn) {
+  summaryView = view;
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderSummaryContent();
 }
-function renderSummary(){
-  const recs=DB.records;
-  const total=sumAmt(recs);
-  const missing=recs.filter(r=>getStatus(r)!=='ok').length;
-  const overdue=odCount(recs);
-  document.getElementById('summary-stats').innerHTML=`
+
+function renderSummary() {
+  const recs = DB.records;
+  const total   = recs.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
+  const missing = recs.filter(r => getStatus(r) !== 'ok').length;
+  const overdue = recs.filter(r => getStatus(r) === 'overdue').length;
+
+  document.getElementById('summary-stats').innerHTML = `
     <div class="stat-card"><div class="val">${recs.length}</div><div class="lbl">סה"כ רשומות</div></div>
     <div class="stat-card"><div class="val">${DB.employees.length}</div><div class="lbl">עובדים</div></div>
-    <div class="stat-card" style="border-color:var(--green)"><div class="val" style="font-size:1.3rem">${fmt(total)}</div><div class="lbl">סה"כ קרנות</div></div>
+    <div class="stat-card" style="border-color:var(--green)"><div class="val" style="font-size:1.4rem">${fmt(total)}</div><div class="lbl">סה"כ קרנות</div></div>
     <div class="stat-card" style="border-color:var(--red)"><div class="val" style="color:var(--red)">${overdue}</div><div class="lbl">עבר 45 יום</div></div>
-    <div class="stat-card" style="border-color:#f39c12"><div class="val" style="color:#7d6608">${missing}</div><div class="lbl">ממתין לעדכון</div></div>`;
+    <div class="stat-card" style="border-color:#f39c12"><div class="val" style="color:#7d6608">${missing}</div><div class="lbl">ממתין לעדכון</div></div>
+  `;
   renderSummaryContent();
 }
-function renderSummaryContent(){
-  accN=0;
-  const recs=DB.records;
-  const el=document.getElementById('summary-content');
-  if(!recs.length){el.innerHTML='<div class="card"><div class="empty-state"><div class="em">📊</div><p>אין נתונים עדיין</p></div></div>';return;}
-  if(svView==='month')    el.innerHTML=buildMonth(recs);
-  if(svView==='employee') el.innerHTML=buildEmployee(recs);
-  if(svView==='type')     el.innerHTML=buildType(recs);
-  if(svView==='fund')     el.innerHTML=buildFund(recs);
+
+function renderSummaryContent() {
+  const recs = DB.records;
+  const el = document.getElementById('summary-content');
+
+  if (!recs.length) {
+    el.innerHTML = '<div class="card"><div class="empty-state"><div class="emoji">📊</div><p>אין נתונים עדיין</p></div></div>';
+    return;
+  }
+
+  if (summaryView === 'month')    { el.innerHTML = buildMonthView(recs);    return; }
+  if (summaryView === 'employee') { el.innerHTML = buildEmployeeView(recs); return; }
+  if (summaryView === 'type')     { el.innerHTML = buildTypeView(recs);     return; }
+  if (summaryView === 'fund')     { el.innerHTML = buildFundView(recs);     return; }
 }
-function accItem(icon,label,badge,total,tableHTML,open){
-  const id='acc-'+(++accN);
-  return `<div class="acc-item${open?' open':''}" id="${id}">
-    <div class="acc-hdr" onclick="document.getElementById('${id}').classList.toggle('open')">
-      ${icon} ${label} ${badge}<span class="gt">${total}</span><span class="arr">▼</span>
+
+// helpers
+function sumAmt(arr)    { return arr.reduce((s,r) => s + (parseFloat(r.amount)||0), 0); }
+function hasIssue(arr)  { return arr.some(r => getStatus(r) !== 'ok'); }
+function overdueCount(arr) { return arr.filter(r => getStatus(r) === 'overdue').length; }
+
+function groupBy(arr, key) {
+  return arr.reduce((acc, r) => {
+    const k = r[key] || '(לא צוין)';
+    if (!acc[k]) acc[k] = [];
+    acc[k].push(r);
+    return acc;
+  }, {});
+}
+
+// Hebrew-aware alphabetical sort
+function heSort(a, b) { return a.localeCompare(b, 'he'); }
+
+// Build an accordion item; open=true to start expanded
+let accCounter = 0;
+function accItem(icon, label, badge, totalStr, tableHTML, open) {
+  const id = 'acc-' + (++accCounter);
+  return `<div class="acc-item${open ? ' open' : ''}" id="${id}">
+    <div class="acc-header" onclick="toggleAcc('${id}')">
+      ${icon} ${label} ${badge}
+      <span class="gtotal">${totalStr}</span>
+      <span class="acc-arrow">▼</span>
     </div>
-    <div class="acc-body"><div class="tw">${tableHTML}</div></div>
+    <div class="acc-body">
+      <div class="table-wrap">${tableHTML}</div>
+    </div>
   </div>`;
 }
-function odBadge(arr){
-  const n=odCount(arr);
-  return n>0?`<span style="background:var(--red);color:white;padding:1px 7px;border-radius:12px;font-size:0.7rem;font-family:Heebo,sans-serif">⚠️ ${n}</span>`:'';
+
+function toggleAcc(id) {
+  document.getElementById(id).classList.toggle('open');
 }
-function buildMonth(recs){
-  const months=[...new Set(recs.map(r=>r.salaryMonth).filter(Boolean))].sort().reverse();
-  return months.map((m,i)=>{
-    const mr=recs.filter(r=>r.salaryMonth===m);
-    const byE=groupBy(mr,'employee');
-    const rows=Object.keys(byE).sort(heSort).map(emp=>{
-      const rs=byE[emp];
-      return `<tr><td><strong>${emp}</strong></td><td>${fmt(sumAmt(rs.filter(r=>r.fundType==='פנסיה')))}</td><td>${fmt(sumAmt(rs.filter(r=>r.fundType==='השתלמות')))}</td><td><strong>${fmt(sumAmt(rs))}</strong></td><td>${hasIssue(rs)?'<span class="badge b-w">⏳ חסר</span>':'<span class="badge b-ok">✓ עודכן</span>'}</td></tr>`;
+
+// ---- BY MONTH ----
+function buildMonthView(recs) {
+  accCounter = 0;
+  const months = [...new Set(recs.map(r => r.salaryMonth).filter(Boolean))].sort().reverse();
+  return months.map((month, i) => {
+    const mRecs = recs.filter(r => r.salaryMonth === month);
+    const mTotal = sumAmt(mRecs);
+    const byEmp = groupBy(mRecs, 'employee');
+    const rows = Object.keys(byEmp).sort(heSort).map(emp => {
+      const rs = byEmp[emp];
+      const pension = sumAmt(rs.filter(r => r.fundType === 'פנסיה'));
+      const study   = sumAmt(rs.filter(r => r.fundType === 'השתלמות'));
+      return `<tr>
+        <td><strong>${emp}</strong></td>
+        <td>${fmt(pension)}</td>
+        <td>${fmt(study)}</td>
+        <td><strong>${fmt(sumAmt(rs))}</strong></td>
+        <td>${hasIssue(rs) ? '<span class="badge badge-warning">⏳ חסר</span>' : '<span class="badge badge-ok">✓ עודכן</span>'}</td>
+      </tr>`;
     }).join('');
-    const t=`<table><thead><tr><th>עובד</th><th>פנסיה</th><th>השתלמות</th><th>סה"כ</th><th>סטטוס</th></tr></thead><tbody>${rows}</tbody></table>`;
-    return accItem('📅',m,odBadge(mr),`סה"כ: ${fmt(sumAmt(mr))}`,t,i===0);
-  }).join('');
-}
-function buildEmployee(recs){
-  const byE=groupBy(recs,'employee');
-  return Object.keys(byE).sort(heSort).map((emp,i)=>{
-    const rs=byE[emp];
-    const months=[...new Set(rs.map(r=>r.salaryMonth).filter(Boolean))].sort().reverse();
-    const rows=months.map(m=>{
-      const mr=rs.filter(r=>r.salaryMonth===m);
-      const od=odCount(mr);
-      return `<tr><td>${m||'—'}</td><td>${fmt(sumAmt(mr.filter(r=>r.fundType==='פנסיה')))}</td><td>${fmt(sumAmt(mr.filter(r=>r.fundType==='השתלמות')))}</td><td><strong>${fmt(sumAmt(mr))}</strong></td><td>${od>0?`<span class="badge b-d">⚠️ ${od}</span>`:hasIssue(mr)?'<span class="badge b-w">⏳ חסר</span>':'<span class="badge b-ok">✓ עודכן</span>'}</td></tr>`;
-    }).join('');
-    const totP=sumAmt(rs.filter(r=>r.fundType==='פנסיה'));
-    const totS=sumAmt(rs.filter(r=>r.fundType==='השתלמות'));
-    const t=`<table><thead><tr><th>חודש שכר</th><th>פנסיה</th><th>השתלמות</th><th>סה"כ</th><th>סטטוס</th></tr></thead><tbody>${rows}<tr style="background:var(--cream);font-weight:700"><td>סה"כ</td><td>${fmt(totP)}</td><td>${fmt(totS)}</td><td>${fmt(sumAmt(rs))}</td><td></td></tr></tbody></table>`;
-    return accItem('👤',emp,odBadge(rs),`סה"כ: ${fmt(sumAmt(rs))}`,t,i===0);
-  }).join('');
-}
-function buildType(recs){
-  return ['פנסיה','השתלמות'].map((type,i)=>{
-    const tr=recs.filter(r=>r.fundType===type);
-    if(!tr.length)return'';
-    const byE=groupBy(tr,'employee');
-    const rows=Object.keys(byE).sort(heSort).map(emp=>{
-      const rs=byE[emp];
-      const byM=groupBy(rs,'salaryMonth');
-      return Object.entries(byM).sort((a,b)=>b[0].localeCompare(a[0])).map(([m,mr])=>{
-        const funds=[...new Set(mr.map(r=>r.fundName).filter(Boolean))].sort(heSort).join(', ');
-        return `<tr><td><strong>${emp}</strong></td><td>${m||'—'}</td><td style="color:#7f8c8d;font-size:0.8rem">${funds||'—'}</td><td><strong>${fmt(sumAmt(mr))}</strong></td><td>${hasIssue(mr)?'<span class="badge b-w">⏳ חסר</span>':'<span class="badge b-ok">✓ עודכן</span>'}</td></tr>`;
-      }).join('');
-    }).join('');
-    const icon=type==='פנסיה'?'🔵':'🟢';
-    const t=`<table><thead><tr><th>עובד</th><th>חודש שכר</th><th>שם קרן</th><th>סכום</th><th>סטטוס</th></tr></thead><tbody>${rows}<tr style="background:var(--cream);font-weight:700"><td colspan="3">סה"כ ${type}</td><td>${fmt(sumAmt(tr))}</td><td></td></tr></tbody></table>`;
-    return accItem(icon,type,odBadge(tr),`סה"כ: ${fmt(sumAmt(tr))}`,t,i===0);
-  }).join('');
-}
-function buildFund(recs){
-  const byF=groupBy(recs,'fundName');
-  return Object.keys(byF).sort(heSort).map((fund,i)=>{
-    const rs=byF[fund];
-    const type=rs[0]?.fundType||'';
-    const byE=groupBy(rs,'employee');
-    const rows=Object.keys(byE).sort(heSort).map(emp=>{
-      const er=byE[emp];
-      const byM=groupBy(er,'salaryMonth');
-      return Object.entries(byM).sort((a,b)=>b[0].localeCompare(a[0])).map(([m,mr])=>{
-        return `<tr><td><strong>${emp}</strong></td><td>${m||'—'}</td><td><strong>${fmt(sumAmt(mr))}</strong></td><td>${mr[0]?.siteAmount!==''&&mr[0]?.siteAmount!=null?fmt(mr[0].siteAmount):'<span style="color:var(--red)">לא הוזן</span>'}</td><td>${odCount(mr)>0?`<span class="badge b-d">⚠️ ${odCount(mr)}</span>`:hasIssue(mr)?'<span class="badge b-w">⏳ חסר</span>':'<span class="badge b-ok">✓ עודכן</span>'}</td></tr>`;
-      }).join('');
-    }).join('');
-    const icon=type==='פנסיה'?'🔵':type==='השתלמות'?'🟢':'🏦';
-    const typeTag=`<span style="opacity:0.6;font-size:0.73rem;font-family:Heebo,sans-serif">${type}</span>`;
-    const t=`<table><thead><tr><th>עובד</th><th>חודש שכר</th><th>סכום קרן</th><th>סכום באתר</th><th>סטטוס</th></tr></thead><tbody>${rows}<tr style="background:var(--cream);font-weight:700"><td colspan="2">סה"כ ${fund}</td><td>${fmt(sumAmt(rs))}</td><td></td><td></td></tr></tbody></table>`;
-    return accItem(icon,fund,`${typeTag} ${odBadge(rs)}`,`סה"כ: ${fmt(sumAmt(rs))}`,t,i===0);
+    const table = `<table>
+      <thead><tr><th>עובד</th><th>פנסיה</th><th>השתלמות</th><th>סה"כ</th><th>סטטוס</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+    const od = overdueCount(mRecs);
+    const badge = od > 0 ? `<span style="background:var(--red);color:white;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-family:Heebo,sans-serif">⚠️ ${od}</span>` : '';
+    return accItem('📅', month, badge, `סה"כ: ${fmt(mTotal)}`, table, i === 0);
   }).join('');
 }
 
-// ===== REMINDERS =====
-function checkReminders(){
-  const od=DB.records.filter(r=>getStatus(r)==='overdue');
-  const cnt=document.getElementById('reminder-count');
-  if(od.length){
-    cnt.textContent=`🔔 ${od.length}`;cnt.style.display='inline';
-    document.getElementById('banner-text').textContent=`יש ${od.length} רשומות שעברו 45 יום ללא עדכון "סכום קרן באתר".`;
+// ---- BY EMPLOYEE ----
+function buildEmployeeView(recs) {
+  accCounter = 0;
+  const byEmp = groupBy(recs, 'employee');
+  const empNames = Object.keys(byEmp).sort(heSort);
+  return empNames.map((emp, i) => {
+    const rs = byEmp[emp];
+    const total = sumAmt(rs);
+    const months = [...new Set(rs.map(r => r.salaryMonth).filter(Boolean))].sort().reverse();
+    const rows = months.map(m => {
+      const mRecs = rs.filter(r => r.salaryMonth === m);
+      const pension = sumAmt(mRecs.filter(r => r.fundType === 'פנסיה'));
+      const study   = sumAmt(mRecs.filter(r => r.fundType === 'השתלמות'));
+      const od = overdueCount(mRecs);
+      return `<tr>
+        <td>${m || '—'}</td>
+        <td>${fmt(pension)}</td>
+        <td>${fmt(study)}</td>
+        <td><strong>${fmt(sumAmt(mRecs))}</strong></td>
+        <td>${od > 0 ? `<span class="badge badge-danger">⚠️ ${od} רשומות</span>` : hasIssue(mRecs) ? '<span class="badge badge-warning">⏳ חסר</span>' : '<span class="badge badge-ok">✓ עודכן</span>'}</td>
+      </tr>`;
+    }).join('');
+    const totPension = sumAmt(rs.filter(r => r.fundType === 'פנסיה'));
+    const totStudy   = sumAmt(rs.filter(r => r.fundType === 'השתלמות'));
+    const table = `<table>
+      <thead><tr><th>חודש שכר</th><th>פנסיה</th><th>השתלמות</th><th>סה"כ</th><th>סטטוס</th></tr></thead>
+      <tbody>${rows}
+        <tr style="background:var(--cream);font-weight:700">
+          <td>סה"כ</td><td>${fmt(totPension)}</td><td>${fmt(totStudy)}</td><td>${fmt(total)}</td><td></td>
+        </tr>
+      </tbody>
+    </table>`;
+    const od = overdueCount(rs);
+    const badge = od > 0 ? `<span style="background:var(--red);color:white;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-family:Heebo,sans-serif">⚠️ ${od}</span>` : '';
+    return accItem('👤', emp, badge, `סה"כ: ${fmt(total)}`, table, i === 0);
+  }).join('');
+}
+
+// ---- BY FUND TYPE ----
+function buildTypeView(recs) {
+  accCounter = 0;
+  const types = ['פנסיה', 'השתלמות'];
+  return types.map((type, i) => {
+    const tRecs = recs.filter(r => r.fundType === type);
+    if (!tRecs.length) return '';
+    const total = sumAmt(tRecs);
+    const byEmp = groupBy(tRecs, 'employee');
+    const rows = Object.keys(byEmp).sort(heSort).map(emp => {
+      const rs = byEmp[emp];
+      const byMonth = groupBy(rs, 'salaryMonth');
+      return Object.entries(byMonth).sort((a,b) => b[0].localeCompare(a[0])).map(([month, mrs]) => {
+        const funds = [...new Set(mrs.map(r => r.fundName).filter(Boolean))].sort(heSort).join(', ');
+        return `<tr>
+          <td><strong>${emp}</strong></td>
+          <td>${month || '—'}</td>
+          <td style="color:#7f8c8d;font-size:0.83rem">${funds || '—'}</td>
+          <td><strong>${fmt(sumAmt(mrs))}</strong></td>
+          <td>${hasIssue(mrs) ? '<span class="badge badge-warning">⏳ חסר</span>' : '<span class="badge badge-ok">✓ עודכן</span>'}</td>
+        </tr>`;
+      }).join('');
+    }).join('');
+    const table = `<table>
+      <thead><tr><th>עובד</th><th>חודש שכר</th><th>שם קרן</th><th>סכום</th><th>סטטוס</th></tr></thead>
+      <tbody>${rows}
+        <tr style="background:var(--cream);font-weight:700">
+          <td colspan="3">סה"כ ${type}</td><td>${fmt(total)}</td><td></td>
+        </tr>
+      </tbody>
+    </table>`;
+    const icon = type === 'פנסיה' ? '🔵' : '🟢';
+    const od = overdueCount(tRecs);
+    const badge = od > 0 ? `<span style="background:var(--red);color:white;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-family:Heebo,sans-serif">⚠️ ${od}</span>` : '';
+    return accItem(icon, type, badge, `סה"כ: ${fmt(total)}`, table, i === 0);
+  }).join('');
+}
+
+// ---- BY FUND NAME ----
+function buildFundView(recs) {
+  accCounter = 0;
+  const byFund = groupBy(recs, 'fundName');
+  const fundNames = Object.keys(byFund).sort(heSort);
+  return fundNames.map((fund, i) => {
+    const rs = byFund[fund];
+    const total = sumAmt(rs);
+    const type  = rs[0]?.fundType || '';
+    const byEmp = groupBy(rs, 'employee');
+    const rows = Object.keys(byEmp).sort(heSort).map(emp => {
+      const eRecs = byEmp[emp];
+      const byMonth = groupBy(eRecs, 'salaryMonth');
+      return Object.entries(byMonth).sort((a,b) => b[0].localeCompare(a[0])).map(([month, mrs]) => {
+        const od = overdueCount(mrs);
+        return `<tr>
+          <td><strong>${emp}</strong></td>
+          <td>${month || '—'}</td>
+          <td><strong>${fmt(sumAmt(mrs))}</strong></td>
+          <td>${mrs[0]?.siteAmount !== '' && mrs[0]?.siteAmount != null ? fmt(mrs[0].siteAmount) : '<span style="color:var(--red)">לא הוזן</span>'}</td>
+          <td>${od > 0 ? `<span class="badge badge-danger">⚠️ ${od}</span>` : hasIssue(mrs) ? '<span class="badge badge-warning">⏳ חסר</span>' : '<span class="badge badge-ok">✓ עודכן</span>'}</td>
+        </tr>`;
+      }).join('');
+    }).join('');
+    const table = `<table>
+      <thead><tr><th>עובד</th><th>חודש שכר</th><th>סכום קרן</th><th>סכום באתר</th><th>סטטוס</th></tr></thead>
+      <tbody>${rows}
+        <tr style="background:var(--cream);font-weight:700">
+          <td colspan="2">סה"כ ${fund}</td><td>${fmt(total)}</td><td></td><td></td>
+        </tr>
+      </tbody>
+    </table>`;
+    const icon = type === 'פנסיה' ? '🔵' : type === 'השתלמות' ? '🟢' : '🏦';
+    const typeTag = type ? `<span style="opacity:0.6;font-size:0.78rem;font-family:Heebo,sans-serif">${type}</span>` : '';
+    const od = overdueCount(rs);
+    const badge = `${typeTag}${od > 0 ? ` <span style="background:var(--red);color:white;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-family:Heebo,sans-serif">⚠️ ${od}</span>` : ''}`;
+    return accItem(icon, fund, badge, `סה"כ: ${fmt(total)}`, table, i === 0);
+  }).join('');
+}
+
+// ======= REMINDERS =======
+function checkReminders() {
+  const overdue = DB.records.filter(r => getStatus(r) === 'overdue');
+  const cnt = document.getElementById('reminder-count');
+  if (overdue.length) {
+    cnt.textContent = `🔔 ${overdue.length} תזכורות`;
+    cnt.style.display = 'inline';
+    document.getElementById('banner-text').textContent =
+      `יש ${overdue.length} רשומות שעברו 45 יום ללא עדכון "סכום קרן באתר". לחץ על לשונית תזכורות לפרטים.`;
     document.getElementById('reminder-banner').classList.add('show');
-    setTimeout(()=>document.getElementById('reminder-banner').classList.remove('show'),6000);
-  }else{cnt.style.display='none';}
+    setTimeout(() => document.getElementById('reminder-banner').classList.remove('show'), 6000);
+  } else {
+    cnt.style.display = 'none';
+  }
 }
-function closeBanner(){document.getElementById('reminder-banner').classList.remove('show');}
-function renderReminders(){
-  const od=DB.records.filter(r=>getStatus(r)==='overdue');
-  const el=document.getElementById('reminders-content');
-  if(!od.length){el.innerHTML='<div class="empty-state"><div class="em">✅</div><p>מצוין! אין רשומות שחרגו מ-45 יום</p></div>';return;}
-  el.innerHTML=`<div class="alert alert-d"><span>⚠️</span><span>נמצאו <strong>${od.length}</strong> רשומות שחרגו מ-45 יום</span></div>
-  <div class="tw"><table>
-    <thead><tr><th>עובד</th><th>חודש שכר</th><th>שם קרן</th><th>סכום קרן</th><th>ת. דיווח</th><th>ימים</th><th>פעולה</th></tr></thead>
-    <tbody>${od.map(r=>`<tr>
-      <td><strong>${r.employee}</strong></td><td>${r.salaryMonth||'—'}</td><td>${r.fundName||'—'}</td>
-      <td>${fmt(r.amount)}</td><td>${fmtDate(r.reportDate)}</td>
-      <td><span class="badge b-d">⚠️ ${daysDiff(r.reportDate||r.paymentDate)} יום</span></td>
-      <td><button class="btn btn-sm btn-s" onclick="editRecord(${r.id})">✏️ עדכן</button></td>
-    </tr>`).join('')}</tbody>
-  </table></div>`;
+function closeBanner() { document.getElementById('reminder-banner').classList.remove('show'); }
+
+function renderReminders() {
+  const overdue = DB.records.filter(r => getStatus(r) === 'overdue');
+  const el = document.getElementById('reminders-content');
+  if (!overdue.length) {
+    el.innerHTML = '<div class="empty-state"><div class="emoji">✅</div><p>מצוין! אין רשומות שחרגו מ-45 יום</p></div>';
+    return;
+  }
+  el.innerHTML = `
+    <div class="alert alert-danger"><span class="alert-icon">⚠️</span>
+      <span>נמצאו <strong>${overdue.length}</strong> רשומות שחרגו מ-45 יום ללא עדכון שדה "סכום קרן באתר"</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>עובד</th><th>חודש שכר</th><th>שם קרן</th><th>סכום קרן</th><th>תאריך דיווח</th><th>ימים שעברו</th><th>פעולה</th></tr></thead>
+        <tbody>
+          ${overdue.map(r => {
+            const diff = daysDiff(r.reportDate || r.paymentDate);
+            return `<tr>
+              <td><strong>${r.employee}</strong></td>
+              <td>${r.salaryMonth||'—'}</td>
+              <td>${r.fundName||'—'}</td>
+              <td>${fmt(r.amount)}</td>
+              <td>${fmtDate(r.reportDate)}</td>
+              <td><span class="badge badge-danger">⚠️ ${diff} יום</span></td>
+              <td><button class="btn btn-sm btn-secondary" onclick="editRecord(${r.id})">✏️ עדכן</button></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
 }
 
-// ===== SETTINGS =====
-function renderSettings(){
-  document.getElementById('emp-list').innerHTML=
-    [...DB.employees].sort(heSort).map((e,i)=>`<div class="tag">${e}<button onclick="removeEmployee('${e.replace(/'/g,"\\'")}')">×</button></div>`).join('');
-  document.getElementById('fund-list').innerHTML=
-    [...DB.funds].sort((a,b)=>a.name.localeCompare(b.name,'he')).map((f,i)=>
-      `<div class="tag">${f.name} <span style="opacity:0.6;font-size:0.72rem">${f.type}</span><button onclick="removeFund('${f.name.replace(/'/g,"\\'")}','${f.type}')">×</button></div>`).join('');
+// ======= SETTINGS =======
+function renderSettings() {
+  document.getElementById('employees-list').innerHTML =
+    DB.employees.map((e,i) => `<div class="tag">${e}<button onclick="removeEmployee(${i})">×</button></div>`).join('');
+  document.getElementById('funds-list').innerHTML =
+    DB.funds.map((f,i) => `<div class="tag">${f.name} <span style="opacity:0.6;font-size:0.75rem">${f.type}</span><button onclick="removeFund(${i})">×</button></div>`).join('');
 }
-function addEmployee(){
-  const v=document.getElementById('new-emp').value.trim();
-  if(!v||DB.employees.includes(v))return;
+function addEmployee() {
+  const v = document.getElementById('new-employee').value.trim();
+  if (!v || DB.employees.includes(v)) return;
   DB.employees.push(v);
-  DB.employees.sort(heSort);
-  dbSave();renderSettings();populateSelects();
-  document.getElementById('new-emp').value='';
+  DB.employees.sort((a,b) => a.localeCompare(b, 'he'));
+  save(); renderSettings(); populateSelects();
+  document.getElementById('new-employee').value = '';
 }
-function removeEmployee(name){
-  if(!confirm(`למחוק את ${name}?`))return;
-  DB.employees=DB.employees.filter(e=>e!==name);
-  dbSave();renderSettings();populateSelects();
+function removeEmployee(i) {
+  if (!confirm(`למחוק את ${DB.employees[i]}?`)) return;
+  DB.employees.splice(i,1);
+  save(); renderSettings(); populateSelects();
 }
-function addFund(){
-  const name=document.getElementById('new-fn').value.trim();
-  const type=document.getElementById('new-ft').value;
-  if(!name)return;
-  if(DB.funds.find(f=>f.name===name&&f.type===type))return;
-  DB.funds.push({name,type});
-  DB.funds.sort((a,b)=>a.name.localeCompare(b.name,'he'));
-  dbSave();renderSettings();filterFunds();
-  document.getElementById('new-fn').value='';
+function addFund() {
+  const name = document.getElementById('new-fund-name').value.trim();
+  const type = document.getElementById('new-fund-type').value;
+  if (!name) return;
+  if (DB.funds.find(f => f.name === name && f.type === type)) return;
+  DB.funds.push({ name, type });
+  DB.funds.sort((a,b) => a.name.localeCompare(b.name, 'he'));
+  save(); renderSettings(); filterFunds();
+  document.getElementById('new-fund-name').value = '';
 }
-function removeFund(name,type){
-  if(!confirm(`למחוק את ${name}?`))return;
-  DB.funds=DB.funds.filter(f=>!(f.name===name&&f.type===type));
-  dbSave();renderSettings();filterFunds();
+function removeFund(i) {
+  if (!confirm(`למחוק את ${DB.funds[i].name}?`)) return;
+  DB.funds.splice(i,1);
+  save(); renderSettings(); filterFunds();
 }
-function resetAll(){
-  if(!confirm('האם אתה בטוח? פעולה זו בלתי הפיכה!'))return;
-  if(!confirm('אישור אחרון — מחיקה מלאה?'))return;
-  DB={employees:[],funds:[],records:[]};
-  dbSave();renderSettings();populateSelects();showToast('כל הנתונים נמחקו');
+function resetAll() {
+  if (!confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים? פעולה זו בלתי הפיכה!')) return;
+  if (!confirm('אישור אחרון — מחיקה מלאה?')) return;
+  DB = { employees: [], funds: [], records: [] };
+  save(); renderSettings(); populateSelects();
+  showSuccess('כל הנתונים נמחקו');
 }
 
-setInterval(checkReminders,3600000);
-dbLoad();
+// ======= EXPORT / IMPORT =======
+function exportData() {
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const payload = JSON.stringify(DB, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `kranot-backup-${dateStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showSuccess(`קובץ גיבוי הורד: kranot-backup-${dateStr}.json ✓`);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.employees || !imported.funds || !imported.records) {
+        throw new Error('מבנה קובץ שגוי');
+      }
+      const empCount = imported.employees.length;
+      const recCount = imported.records.length;
+      const fundCount = imported.funds.length;
+      if (!confirm(`נמצאו בקובץ:\n• ${empCount} עובדים\n• ${fundCount} קרנות\n• ${recCount} רשומות\n\nהייבוא יחליף את כל הנתונים הקיימים. להמשיך?`)) {
+        document.getElementById('import-file').value = '';
+        return;
+      }
+      DB = imported;
+      // ensure sorted
+      DB.employees.sort((a,b) => a.localeCompare(b, 'he'));
+      DB.funds.sort((a,b) => a.name.localeCompare(b.name, 'he'));
+      save();
+      populateSelects();
+      renderSettings();
+      document.getElementById('import-file').value = '';
+      document.getElementById('import-status').innerHTML =
+        `<div class="alert alert-success" style="margin-top:0"><span>✅</span> יובאו בהצלחה: ${recCount} רשומות, ${empCount} עובדים, ${fundCount} קרנות</div>`;
+      setTimeout(() => { document.getElementById('import-status').innerHTML = ''; }, 5000);
+    } catch(err) {
+      document.getElementById('import-status').innerHTML =
+        `<div class="alert alert-danger" style="margin-top:0"><span>❌</span> שגיאה בקריאת הקובץ — ודאי שזהו קובץ גיבוי תקין</div>`;
+      document.getElementById('import-file').value = '';
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ======= INIT =======
+populateSelects();
+// Set today as default report date
+document.getElementById('f-report-date').value = new Date().toISOString().split('T')[0];
+// Set current month as default
+const now = new Date();
+document.getElementById('f-salary-month').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+// Check reminders on load
+setTimeout(checkReminders, 1000);
+
+// Auto-check reminders every hour
+setInterval(checkReminders, 3600000);
+
+// Close modal on overlay click
+document.getElementById('edit-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
 </script>
 </body>
 </html>
